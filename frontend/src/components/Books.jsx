@@ -1,13 +1,14 @@
 import { useQuery } from '@apollo/client';
-import { ALL_BOOKS } from '../queries';
+import { ALL_BOOKS, ALL_GENRES } from '../queries';
+import { useState } from 'react';
 
 const Books = () => {
-  const result = useQuery(ALL_BOOKS);
-
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const books = useQuery(ALL_BOOKS, { variables: { genre: selectedGenre } });
+  const genres = useQuery(ALL_GENRES);
   return (
     <div>
       <h2>books</h2>
-
       <table>
         <tbody>
           <tr>
@@ -15,10 +16,10 @@ const Books = () => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {result.loading ? (
+          {books.loading ? (
             <div>Loading...</div>
           ) : (
-            result?.data?.allBooks.map(({ title, author, published }) => (
+            books?.data?.allBooks.map(({ title, author, published }) => (
               <tr key={title}>
                 <td>{title}</td>
                 <td>{author.name}</td>
@@ -28,6 +29,35 @@ const Books = () => {
           )}
         </tbody>
       </table>
+      <h3>Choose genre</h3>
+      {genres?.data?.allBooks
+        .flatMap((book) => book.genres)
+        .reduce(
+          (accGenres, currentGenre) =>
+            accGenres.includes(currentGenre)
+              ? accGenres
+              : accGenres.concat(currentGenre),
+          []
+        )
+        .map((genre) => (
+          <button
+            key={genre}
+            style={
+              selectedGenre === genre
+                ? { backgroundColor: 'black', color: 'white' }
+                : {}
+            }
+            onClick={() => {
+              if (selectedGenre !== genre) {
+                setSelectedGenre(genre);
+              } else {
+                setSelectedGenre(null);
+              }
+            }}
+          >
+            {genre}
+          </button>
+        ))}
     </div>
   );
 };
