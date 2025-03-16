@@ -30,7 +30,7 @@ const Authors = () => {
             {result.loading ? (
               <div>loading...</div>
             ) : (
-              result.data.allAuthors.map(({ name, born, bookCount }) => (
+              result.data?.allAuthors?.map(({ name, born, bookCount }) => (
                 <tr key={name}>
                   <td>{name}</td>
                   <td>{born}</td>
@@ -48,7 +48,7 @@ const Authors = () => {
             <label htmlFor="author">Author</label>
             <select id="author" name="author">
               <option />
-              {result?.data.allAuthors.map(({ name }) => (
+              {result?.data?.allAuthors.map(({ name }) => (
                 <option key={name} value={name}>
                   {name}
                 </option>
