@@ -1,21 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Authors from './components/Authors';
 import Books from './components/Books';
 import NewBook from './components/NewBook';
+import Login from './components/Login';
+import { useApolloClient } from '@apollo/client';
 
 const App = () => {
   const [page, setPage] = useState('authors');
+  const [token, setToken] = useState(null);
+  const client = useApolloClient();
+
+  useEffect(() => {
+    const localToken = localStorage.getItem('user-token');
+    if (localToken) {
+      setToken(localToken);
+    }
+  }, [setToken]);
+
+  const removeToken = () => {
+    localStorage.clear();
+    setToken(null);
+    client.resetStore();
+  };
 
   return (
     <div>
-      <div>
-        <button onClick={() => setPage('authors')}>authors</button>
-        <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
-      </div>
+      <header
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}
+      >
+        <nav>
+          <button onClick={() => setPage('authors')}>authors</button>
+          <button onClick={() => setPage('books')}>books</button>
+          {token && <button onClick={() => setPage('add')}>add book</button>}
+        </nav>
+        {token ? (
+          <button onClick={removeToken}>logout</button>
+        ) : (
+          <Login setToken={setToken} />
+        )}
+      </header>
       {page === 'authors' && <Authors />}
       {page === 'books' && <Books />}
-      {page === 'add' && <NewBook />}
+      {page === 'add' && token && <NewBook />}
     </div>
   );
 };
