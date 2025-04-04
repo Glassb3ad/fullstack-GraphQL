@@ -80,3 +80,10 @@ export const EDIT_AUTHOR_BIRTH_YEAR = gql`
     }
   }
 `
+
+export const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      title
+    }
+  }`

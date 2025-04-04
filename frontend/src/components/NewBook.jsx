@@ -1,12 +1,19 @@
 import { useState } from 'react';
-import { useMutation } from '@apollo/client';
-import { ADD_BOOK } from '../queries';
+import { useMutation, useSubscription } from '@apollo/client';
+import { ADD_BOOK, BOOK_ADDED } from '../queries';
 const NewBook = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [published, setPublished] = useState('');
   const [genre, setGenre] = useState('');
   const [genres, setGenres] = useState([]);
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      window.alert(`Created book with title ${data.data.bookAdded.title}`);
+    },
+  });
+
   const [createPerson] = useMutation(ADD_BOOK, {
     onCompleted: () => {
       setTitle('');
